@@ -1,0 +1,27 @@
+{
+  "name": "rekiski",
+  "version": "1.0.0",
+  "description": "Discord Bot",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Demonkillua/discord-rekishi.git"
+  },
+  "author": "Edward Greczkowski",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Demonkillua/discord-rekishi/issues"
+  },
+  "homepage": "https://github.com/Demonkillua/discord-rekishi#readme",
+  "dependencies": {
+    "@discordjs/voice": "^0.7.5",
+    "discord.js": "^13.3.1",
+    "dotenv": "^10.0.0",
+    "mongoose": "^6.0.13",
+    "nodemon": "^2.0.15"
+  }
+}

@@ -10,8 +10,8 @@ module.exports = {
 		.setDescription("beg for currency."),
 	async execute(interaction) {
         const randomCopper = Math.floor(Math.random() * 50) + 1;
-        const randomSilver = Math.floor(Math.random() * 10);
-        const randomGold = Math.floor(Math.random() * 1);
+        const randomSilver = Math.floor(Math.random() * 11);
+        const randomGold = Math.floor(Math.random() * 2);
         const response = await profileModel.findOneAndUpdate(
         {
             userID: interaction.member.user.id,

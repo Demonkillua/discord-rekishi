@@ -1,3 +1,4 @@
+const { Embed } = require("@discordjs/builders");
 const Discord = require("discord.js");
 const profileModel = require("../models/profileSchema");
 const cooldowns = new Map();
@@ -53,6 +54,29 @@ module.exports = {
 
 	    if (!command) return;
 
+		const errorEmbed = new Discord.MessageEmbed().setColor("RED");
+
+		if (!interaction.guild.me.permissions.has(["SEND_MESSAGES", "EMBED_LINKS"])) {
+			errorEmbed.setDescription(`I don't doesn't have the \`SEND_MESSAGES\` or \`EMBED_LINKS\` permissions so execute ${command.name} of the ${interaction.channel.toString()} channel.`)
+			return await interaction.member.send({ embeds: [errorEmbed], ephemeral: true })
+		}
+		if (!interaction.member.permissions.has(command.permissions || [])) {
+			errorEmbed.setDescription(`You need the following permissions \`\`\`${command.permissions.join(", ")}\`\`\``)
+			return await interaction.reply({ embeds: [errorEmbed], ephemeral: true })
+		}
+		if (!interaction.guild.me.permissions.has(command.botPerms || [])) {
+			errorEmbed.setDescription(`The bot does not have there permissions \`\`\`${command.permissions.join(", ")}\`\`\``)
+			return await interaction.reply({ embeds: [errorEmbed], ephemeral: true })
+		}
+		const channelPerms = interaction.channel.permissionsFor(interaction.guild.me).toArray();
+		const checkArr = [];
+		const chPerms = command.chnlPerms || [];
+		channelPerms.forEach((x) => (chPerms.includes(x) ? checkArr.push(true) : checkArr.push(false)))
+		if (checkArr.includes(false) && !checkArr.includes(true) && chPerms.length) {
+			errorEmbed.setDescription(`The bot doesn't have these permissions on the ${interaction.channel.toString()} channel \`\`\`${chPerms.join(", ")}\`\`\``)
+			return await interaction.reply({ embeds: [errorEmbed], ephemeral: true })
+		}
+
 		if (!cooldowns.has(command.name)) {
 			cooldowns.set(command.name, new Discord.Collection());
 		}
@@ -76,7 +100,7 @@ module.exports = {
 				} else if (hours >= 1) {
 					return interaction.reply({ content: `${interaction.user.username}, please wait **${hours}** hour(s), **${minutes}** minute(s), and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
 				} else if (minutes >= 1) {
-					return interaction.reply({ content: `${interaction.user.userame}, please wait **${minutes}** minute(s) and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
+					return interaction.reply({ content: `${interaction.user.username}, please wait **${minutes}** minute(s) and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
 				} else return interaction.reply({ content: `${interaction.user.username}, please wait **${Math.ceil(time_left.toFixed(1))}** more second(s) to use \`/${command.name}\` again.`, ephemeral: true})
 			}
 		}

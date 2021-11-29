@@ -10,8 +10,7 @@ module.exports = {
             .setTitle('Pong!')
             .setAuthor(`${interaction.member.user.username}`, `${interaction.member.user.displayAvatarURL({ dynamic: true })}`, '')
             .setColor('RANDOM')
-            .setDescription(`Latency is ${Date.now() - interaction.createdTimestamp}ms.`); 
-            // API Latency is ${Math.round(client.ws.ping)}ms);
+            .setDescription(`Latency is ${Date.now() - interaction.createdTimestamp}ms\nAPI Latency is ${Math.round(interaction.client.ws.ping)}ms`);
 		
 		await interaction.reply({
 			embeds: [pongEmbed],

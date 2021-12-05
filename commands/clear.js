@@ -9,9 +9,8 @@ module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("clear")
 		.setDescription("Bulk delete recent messages.")
-		// .setDefaultPermission(false)
 		.addNumberOption(option => option.setName("amount").setDescription("Amount of messages to delete").setRequired(true))
-		.addUserOption(option => option.setName("target").setDescription("User to target").setRequired(false)),
+		.addUserOption(option => option.setName("target").setDescription("User to target")),
 	async execute(interaction) {
 		const amount = interaction.options.getNumber("amount");
 		const target = interaction.options.getMember("target");

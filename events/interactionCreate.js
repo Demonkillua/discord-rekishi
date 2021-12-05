@@ -57,7 +57,7 @@ module.exports = {
 		const errorEmbed = new Discord.MessageEmbed().setColor("RED");
 
 		if (!interaction.guild.me.permissions.has(["SEND_MESSAGES", "EMBED_LINKS"])) {
-			errorEmbed.setDescription(`I don't doesn't have the \`SEND_MESSAGES\` or \`EMBED_LINKS\` permissions so execute ${command.name} of the ${interaction.channel.toString()} channel.`)
+			errorEmbed.setDescription(`I don't have the \`SEND_MESSAGES\` or \`EMBED_LINKS\` permissions to execute ${command.name} of the ${interaction.channel.toString()} channel.`)
 			return await interaction.member.send({ embeds: [errorEmbed], ephemeral: true })
 		}
 		if (!interaction.member.permissions.has(command.permissions || [])) {

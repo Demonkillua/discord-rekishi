@@ -1,5 +1,6 @@
 const Discord = require("discord.js");
 const profileModel = require('../models/profileSchema')
+const serverSettingsModel = require('../models/serverSettingsSchema')
 
 module.exports = {
 	name: 'guildMemberAdd',
@@ -12,7 +13,15 @@ module.exports = {
 			.setAuthor(`${member.user.username}`, `${member.user.displayAvatarURL({ dynamic: true })}`)
 			.setTimestamp();
 
-		member.guild.channels.cache.get("911780529924362252").send({ embeds: [newMemberEmbed] });
+		const serverSettingsData = await serverSettingsModel.findOne({ serverId: member.guild.id });
+		if (!serverSettingsData) {
+			let serverSettings = await serverSettingsModel.create({
+				serverId: member.guild.id,
+				welcomeChannelId: null,
+			});
+			var channelId = null
+		} else var channelId = serverSettingsData.welcomeChannelId;
+		if (channelId !== null ) member.guild.channels.cache.get(`${channelId}`).send({ embeds: [newMemberEmbed] });
 
 		profileData = await profileModel.findOne({ userID: member.id, serverID: member.guild.id });
 		if (!profileData) {

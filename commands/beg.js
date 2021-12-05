@@ -5,28 +5,30 @@ const profileModel = require("../models/profileSchema");
 module.exports = {
     name: "beg",
     cooldown: 7200,
-	data: new SlashCommandBuilder()
-		.setName("beg")
-		.setDescription("beg for currency."),
-	async execute(interaction) {
-        const randomCopper = Math.floor(Math.random() * 50) + 1;
-        const randomSilver = Math.floor(Math.random() * 11);
-        const randomGold = Math.floor(Math.random() * 2);
+    data: new SlashCommandBuilder()
+        .setName("beg")
+        .setDescription("beg for currency."),
+    async execute(interaction) {
+        if (Math.floor(Math.random() * 2) > 0) { var randomCopper = Math.floor(Math.random() * 50) + 1 } else { var randomCopper = Math.floor(Math.random() * 20) + 1 };
+        if (Math.floor(Math.random() * 5) > 3) { var randomSilver = Math.floor(Math.random() * 11) } else if (Math.floor(Math.random() * 3) > 1) {
+            var randomSilver = Math.floor(Math.random() * 7)
+        } else var randomSilver = Math.floor(Math.random() * 3);
+        if (Math.floor(Math.random() * 20) > 18) { var randomGold = Math.floor(Math.random() * 2) } else { var randomGold = 0 };
         const response = await profileModel.findOneAndUpdate(
-        {
-            userID: interaction.member.user.id,
-            serverID: interaction.member.guild.id,
-        },
-        {
-            $inc: {
-            copper: randomCopper,
-            silver: randomSilver,
-            gold: randomGold,
-            totalCopper: randomCopper,
-            totalCopper: randomSilver,
-            totalCopper: randomGold,
+            {
+                userID: interaction.member.user.id,
+                serverID: interaction.member.guild.id,
             },
-        }
+            {
+                $inc: {
+                    copper: randomCopper,
+                    silver: randomSilver,
+                    gold: randomGold,
+                    totalCopper: randomCopper,
+                    totalCopper: randomSilver,
+                    totalCopper: randomGold,
+                },
+            }
         );
 
         const randomBegged = Math.floor(Math.random() * 10);
@@ -46,7 +48,9 @@ module.exports = {
             var begReply = interaction.reply(`**${interaction.user.username}**, you ${begged[randomBegged]} **${randomGold}** gold, **${randomSilver}** silver, and **${randomCopper}** copper.`)
         } else if (randomGold < 1 && randomSilver > 0) {
             var begReply = interaction.reply(`**${interaction.user.username}**, you ${begged[randomBegged]} **${randomSilver}** silver and **${randomCopper}** copper.`)
-        } else var begReply = interaction.reply(`**${interaction.user.username}**, you ${begged[randomBegged]} **${randomCopper}** copper.`)
+        } else if (randomGold > 0 && randomSilver < 1) {
+            var begReply = interaction.reply(`**${interaction.user.username}**, you ${begged[randomBegged]} **${randomGold}** gold and **${randomCopper}** copper.`)
+        } else var begReply = interaction.reply(`**${interaction.user.username}**, you ${begged[randomBegged]} **${randomCopper}** copper.`);
 
         await begReply;
     },

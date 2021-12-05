@@ -1,16 +1,36 @@
 const Discord = require("discord.js");
+const serverSettingsModel = require("../models/serverSettingsSchema")
 
 module.exports = {
 	name: 'guildMemberRemove',
 	async execute(member) {
-		// member.guild.channels.cache.get("911780529924362252").send(`${member.user} has joined the server!`)
+		const randomMessage = Math.floor(Math.random() * 7);
+		const goodbyeMessage = [
+			`${member.user} has left the server!\nIt's a shame to see you go!`,
+			`It was good to know you while it lasted.\nGoodbye, ${member.user}!`,
+			`It's the simple things in life.\nGoodbye, ${member.user}!`,
+			`${member.user} tried to sneak out, but he didn't escape my perception. Goodbye!`,
+			`${member.user} has left the server.\nCome back soon!`,
+			`${member.user} was slain and a new chracter is requried.\nMaybe they will raise another day, goodbye.`,
+			`Quick! We need healing!\n${member.user} is leaving us.`,
+			`Goodbye's can open up new opportunities, but it will still be sad to see you go, ${member.user}`
+		];
 		const memberLeftEmbed = new Discord.MessageEmbed()
 			.setColor("RED")
-			.setTitle("Member Left")
-			.setDescription(`${member.user} has left the server! It's a shame to see you go!`)
-			.setAuthor(`${member.user.username}`, `${member.user.displayAvatarURL({ dynamic: true })}`)
+			.setTitle("Goodbye!")
+			.setThumbnail(`${member.user.displayAvatarURL({ dynamic: true })}`)
+			.setDescription(goodbyeMessage[randomMessage])
 			.setTimestamp();
 
-		member.guild.channels.cache.get("911780529924362252").send({ embeds: [memberLeftEmbed] });
-    }
+			const serverSettingsData = await serverSettingsModel.findOne({ serverId: member.guild.id });
+			if (!serverSettingsData) {
+				let serverSettings = await serverSettingsModel.create({
+					serverId: member.guild.id,
+					welcomeChannelId: null,
+					goodbyeChannelId: null,
+				});
+				var channelId = null
+			} else var channelId = serverSettingsData.welcomeChannelId;
+			if (channelId !== null) member.guild.channels.cache.get(`${channelId}`).send({ embeds: [memberLeftEmbed] });
+	}
 };

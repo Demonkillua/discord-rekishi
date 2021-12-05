@@ -8,7 +8,9 @@ module.exports = {
     async execute(interaction) {
         const helpEmbed = new Discord.MessageEmbed()
             .setColor("GREEN")
+            .setThumbnail(``)
             .setTitle(`Help`)
+            .setDescription('')
             .addFields(
                 { name: "/balance", value: "View your on hand currency", inline: true },
                 { name: "/beg", value: "Beg for some free currency\n[2 hour cooldown]", inline: true },

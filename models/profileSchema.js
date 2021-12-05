@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const profileSchema = new mongoose.Schema({
-    userID: { type: String, require: true},
+    userID: { type: String, require: true },
     serverID: { type: String, require: true },
     userName: { type: String },
     serverName: { type: String },
@@ -16,7 +16,8 @@ const profileSchema = new mongoose.Schema({
     totalPlatinum: { type: Number },
     exp: { type: Number },
     level: { type: Number, default: 1 },
-    inventory: { type: Object,
+    inventory: {
+        type: Object,
         head: { type: String },
         neck: { type: String },
         cloak: { type: String },

@@ -1,11 +1,10 @@
-const { Embed } = require("@discordjs/builders");
 const Discord = require("discord.js");
-const profileModel = require("../models/profileSchema");
-const cooldowns = new Map();
+const profileModel = require("../../models/profileSchema");
+const cooldowns = new Map;
 
 module.exports = {
 	name: 'interactionCreate',
-	async execute(interaction) {
+	async execute(interaction, client) {
 
 		let profileData;
 		try {
@@ -16,6 +15,7 @@ module.exports = {
 					serverID: interaction.guild.id,
 					userName: interaction.user.username,
 					serverName: interaction.guild.name,
+					contributor: false,
 					copper: 1000,
 					silver: 0,
 					gold: 0,
@@ -96,12 +96,12 @@ module.exports = {
 				var seconds = Math.ceil(time_left.toFixed(1) - (days * 86400) - (hours * 3600) - (minutes * 60));
 
 				if (days >= 1) {
-					return interaction.reply({ content: `${interaction.user.username}, please wait **${days}** day(s), **${hours}** hour(s), **${minutes}** minute(s), and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
+					return interaction.reply({ content: `${interaction.member.displayName}, please wait **${days}** day(s), **${hours}** hour(s), **${minutes}** minute(s), and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
 				} else if (hours >= 1) {
-					return interaction.reply({ content: `${interaction.user.username}, please wait **${hours}** hour(s), **${minutes}** minute(s), and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
+					return interaction.reply({ content: `${interaction.member.displayName}, please wait **${hours}** hour(s), **${minutes}** minute(s), and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
 				} else if (minutes >= 1) {
-					return interaction.reply({ content: `${interaction.user.username}, please wait **${minutes}** minute(s) and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
-				} else return interaction.reply({ content: `${interaction.user.username}, please wait **${Math.ceil(time_left.toFixed(1))}** more second(s) to use \`/${command.name}\` again.`, ephemeral: true })
+					return interaction.reply({ content: `${interaction.member.displayName}, please wait **${minutes}** minute(s) and **${seconds}** second(s) to use \`/${command.name}\` again.`, ephemeral: true })
+				} else return interaction.reply({ content: `${interaction.member.displayName}, please wait **${Math.ceil(time_left.toFixed(1))}** more second(s) to use \`/${command.name}\` again.`, ephemeral: true })
 			}
 		}
 
@@ -109,7 +109,7 @@ module.exports = {
 		setTimeout(() => time_stamps.delete(interaction.user.id + interaction.guild.id), cooldown_amount);
 
 		try {
-			await command.execute(interaction, Discord);
+			await command.execute(interaction, client, Discord, profileData);
 		} catch (err) {
 			if (err) console.error(err);
 			await interaction.reply({

@@ -1,15 +1,16 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
+const { SlashCommandBuilder } = require("@discordjs/builders");
 const serverSettingsModel = require("../models/serverSettingsSchema")
 
 module.exports = {
 	name: "setwelcome",
 	permissions: ["MANAGE_GUILD"],
 	data: new SlashCommandBuilder()
-		.setName('setwelcome')
-		.setDescription('Set up the channel for all welcome messages')
+		.setName("setwelcome")
+		.setDescription("Administation: Set up the channel for all welcome messages")
 		.addChannelOption(option => option.setName("welcomechannel").setDescription("The channel to set for all welcome messages"))
-		.addBooleanOption(option => option.setName("delete").setDescription("Pass as true to remove your welcome channel")),
-	async execute(interaction) {
+		.addBooleanOption(option => option.setName("delete").setDescription("Pass as true to remove your welcome channel")), //addChoices([["descrption", "name"], ["description, name"]])
+	async execute(interaction, message, args) {
+		if (args === "setwelcome") return;
 		if (!interaction.options.getBoolean("delete") && !interaction.options.getChannel("welcomechannel")) {
 			return interaction.reply({ content: "You need to select at least one option to set or delete a welcome channel.", ephemeral: true });
 		} else if (interaction.options.getBoolean("delete") === true) {

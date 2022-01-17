@@ -1,18 +1,16 @@
 const Discord = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const profileModel = require("../models/profileSchema");
+const profileModel = require("../models/profileSchema")
 
 module.exports = {
+    name: "balance",
+    description: "Replies with current currency balance",
+    aliases: ["bal", "bl"],
     data: new SlashCommandBuilder()
         .setName("balance")
-        .setDescription("Replies with server stats."),
-    async execute(interaction) {
-        let profileData;
-        try {
-            profileData = await profileModel.findOne({ userID: interaction.user.id, serverID: interaction.guild.id });
-        } catch (err) {
-            console.log(err);
-        }
+        .setDescription("Replies with current currency balance"),
+    async execute(interaction, message, client) {
+        let profileData = await profileModel.findOne({ userID: interaction.member.user.id, serverID: interaction.member.guild.id });
 
         const newEmbed = new Discord.MessageEmbed()
             .setColor('#32a852')

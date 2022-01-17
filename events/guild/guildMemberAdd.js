@@ -1,6 +1,6 @@
 const Discord = require("discord.js");
-const profileModel = require('../models/profileSchema')
-const serverSettingsModel = require('../models/serverSettingsSchema')
+const profileModel = require('../../models/profileSchema')
+const serverSettingsModel = require('../../models/serverSettingsSchema')
 
 module.exports = {
 	name: 'guildMemberAdd',

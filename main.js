@@ -24,15 +24,23 @@ for (const file of commandFiles) {
 	client.commands.set(command.data.name, command);
 }
 
-const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
+const load_dir = (dirs) => {
+	const event_files = fs.readdirSync(`./events/${dirs}`).filter(file => file.endsWith('.js'));
 
-for (const file of eventFiles) {
-	const event = require(`./events/${file}`);
-	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args, commands));
-	} else {
-		client.on(event.name, (...args) => event.execute(...args, commands));
+	for (const file of event_files) {
+		const event = require(`./events/${dirs}/${file}`);
+		const event_name = file.split('.')[0];;
+
+		if (event.once) {
+			client.once(event.name, (...args) => event.execute(...args, commands, Discord, client));
+		} else if (file == "messageCreate.js") {
+			client.on(event_name, event.bind(null, Discord, client))
+		} else {
+			client.on(event.name, (...args) => event.execute(...args, Discord, client));
+		}
 	}
 }
+
+['client', 'guild'].forEach(e => load_dir(e));
 
 client.login(process.env.TOKEN);

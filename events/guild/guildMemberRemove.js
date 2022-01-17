@@ -1,5 +1,5 @@
 const Discord = require("discord.js");
-const serverSettingsModel = require("../models/serverSettingsSchema")
+const serverSettingsModel = require("../../models/serverSettingsSchema")
 
 module.exports = {
 	name: 'guildMemberRemove',

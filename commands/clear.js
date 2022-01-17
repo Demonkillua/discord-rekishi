@@ -8,10 +8,11 @@ module.exports = {
 	permissions: ["MANAGE_MESSAGES"],
 	data: new SlashCommandBuilder()
 		.setName("clear")
-		.setDescription("Bulk delete recent messages.")
+		.setDescription("Moderation: Bulk delete recent messages.")
 		.addNumberOption(option => option.setName("amount").setDescription("Amount of messages to delete").setRequired(true))
 		.addUserOption(option => option.setName("target").setDescription("User to target")),
-	async execute(interaction) {
+	async execute(interaction, message, args, client) {
+		if (args === "clear") return;
 		const amount = interaction.options.getNumber("amount");
 		const target = interaction.options.getMember("target");
 

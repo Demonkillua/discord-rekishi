@@ -5,6 +5,7 @@ const profileSchema = new mongoose.Schema({
     serverID: { type: String, require: true },
     userName: { type: String },
     serverName: { type: String },
+    contributor: { type: Boolean },
     copper: { type: Number, default: 1000 },
     silver: { type: Number },
     gold: { type: Number },

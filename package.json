@@ -1,14 +1,22 @@
 {
-  "name": "rekishi_testing",
+  "name": "rekiski",
   "version": "1.0.0",
-  "description": "testing files for Rekishi Bot",
-  "main": "index.js",
+  "description": "Main rekishi discord bot",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Demonkillua/discord-rekishi.git"
   },
   "author": "Edward Greczkowski",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Demonkillua/discord-rekishi/issues"
+  },
+  "homepage": "https://github.com/Demonkillua/discord-rekishi#readme",
   "dependencies": {
     "@discordjs/builders": "^0.8.2",
     "@discordjs/opus": "^0.5.3",
@@ -20,7 +28,6 @@
     "dotenv": "^10.0.0",
     "mongoose": "^6.0.13",
     "nodemon": "^2.0.15",
-    "yt-search": "^2.10.3",
-    "ytdl-core": "^4.10.1"
+    "yt-search": "^2.10.3"
   }
 }

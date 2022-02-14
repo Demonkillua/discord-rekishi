@@ -1,6 +1,7 @@
 require("dotenv").config();
 const fs = require("fs");
 const Discord = require("discord.js");
+const music = require("@koenie06/discord.js-music");
 
 const client = new Discord.Client({
 	partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
@@ -9,6 +10,7 @@ const client = new Discord.Client({
 		Discord.Intents.FLAGS.GUILD_MESSAGES,
 		Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
 		Discord.Intents.FLAGS.GUILD_MEMBERS,
+		Discord.Intents.FLAGS.GUILD_VOICE_STATES,
 	],
 });
 
@@ -42,5 +44,31 @@ const load_dir = (dirs) => {
 }
 
 ['client', 'guild'].forEach(e => load_dir(e));
+
+music.event.on('playSong', (channel, songInfo, requester) => {
+	channel.send({ content: `Started playing the song **${songInfo.title}** - ${songInfo.duration} | Requested by \`${requester.tag}\`\n(${songInfo.url})` });
+});
+
+music.event.on('addSong', (channel, songInfo, requester) => {
+	channel.send({ content: `Added the song **${songInfo.title}** - ${songInfo.duration} to the queue | Added by \`${requester.tag}\`\n(${songInfo.url})` });
+});
+
+music.event.on('playList', async (channel, playlist, songInfo, requester) => {
+    channel.send({
+        content: `Started playing the song **${songInfo.title}** by \`${songInfo.author}\` of the playlist ${playlist.title}.
+        This was requested by ${requester.tag} (${requester.id})\n(${songInfo.url})`
+    });
+});
+
+music.event.on('addList', async (channel, playlist, requester) => {
+    channel.send({
+        content: `Added the playlist **${playlist.title}** with ${playlist.videos.length} amount of videos to the queue.
+        Added by ${requester.tag} (${requester.id})\n(${playlist.url})`
+    });
+});
+
+music.event.on('finish', (channel) => {
+	channel.send({ content: `All music has been played, disconnecting..` });
+});
 
 client.login(process.env.TOKEN);

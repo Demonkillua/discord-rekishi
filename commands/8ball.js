@@ -13,7 +13,10 @@ module.exports = {
         const result = Math.floor(Math.random() * replies.length);
         const question = interaction.options.getString("question");
         const resultEmbed = new Discord.MessageEmbed()
-            .setAuthor(`${interaction.member.user.username}`, `${interaction.member.user.displayAvatarURL({ dynamic: true })}`, '')
+            .setAuthor({
+                name: `${interaction.member.user.username}`,
+                iconURL: `${interaction.member.user.displayAvatarURL({ dynamic: true })}`
+            })
             .setColor('WHITE')
             .addFields(
                 { name: "Question", value: question },

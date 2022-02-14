@@ -23,9 +23,12 @@ module.exports = {
         var dice = interaction.options.getNumber("die");
         var mod = interaction.options.getNumber("modifier")
 
-        if (mod >= 0) var sign = " + "
+        if (mod > 0) var sign = " + "
         else if (mod < 0) var sign = " - "
         else var sign = "";
+
+        var modText = Math.abs(mod)
+        if (modText === 0) var modText = "";
 
         if (amount % 1 != 0 || amount < 1) return interaction.reply({ content: "Amount must be a whole number greater than or equal to 1", ephemeral: true });
         if (mod % 1 != 0) return interaction.reply({ content: "Modifier must be a whole number", ephemeral: true })
@@ -36,12 +39,15 @@ module.exports = {
         if (randomNumber > maxAmount) var randomNumber = maxAmount;
         const rollEmbed = new Discord.MessageEmbed()
             .setColor("RANDOM")
-            .setAuthor(`${interaction.member.user.username}`, `${interaction.member.user.displayAvatarURL({ dynamic: true })}`, '')
-            .setDescription(`You rolled ${amount} D${dice}${sign}${Math.abs(mod)}!`)
+            .setAuthor({
+                name: `${interaction.member.user.username}`,
+                iconURL: `${interaction.member.user.displayAvatarURL({ dynamic: true })}`
+            })
+            .setDescription(`You rolled ${amount} D${dice}${sign}${modText}!`)
             .addFields(
                 { name: 'Results', value: `**${randomNumber + mod}**` }
             )
-            .setFooter(`Roll with /roll`);
+            .setFooter({ text: `Roll with /roll` });
         await interaction.reply({ embeds: [rollEmbed] });
     },
 };

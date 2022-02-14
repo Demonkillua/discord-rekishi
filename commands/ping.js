@@ -10,7 +10,10 @@ module.exports = {
 	async execute(interaction) {
 		const pongEmbed = new Discord.MessageEmbed()
 			.setTitle('Pong!')
-			.setAuthor(`${interaction.member.user.username}`, `${interaction.member.user.displayAvatarURL({ dynamic: true })}`, '')
+			.setAuthor({
+				name: `${interaction.member.user.username}`,
+				iconURL: `${interaction.member.user.displayAvatarURL({ dynamic: true })}`
+		})
 			.setColor('RANDOM')
 			.setDescription(`Latency is ${Date.now() - interaction.createdTimestamp}ms\nAPI Latency is ${Math.round(interaction.client.ws.ping)}ms`);
 

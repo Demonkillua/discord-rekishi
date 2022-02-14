@@ -20,7 +20,7 @@ module.exports = {
                 { name: 'Wallet: ', value: `Copper: ${profileData.copper}\nSilver: ${profileData.silver}\nGold: ${profileData.gold}\nPlatinum: ${profileData.platinum}` },
                 { name: 'Bank: ', value: `${profileData.bank}` }
             )
-            .setFooter(`Find your balance with /balance`);
+            .setFooter({ text: `Find your balance with /balance` });
 
         await interaction.reply({
             embeds: [newEmbed],

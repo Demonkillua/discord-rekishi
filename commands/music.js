@@ -14,18 +14,23 @@ module.exports = {
             subcommand
                 .setName("queue")
                 .setDescription("Check the music queue"))
-        // .addSubcommand(subcommand =>
-        //     subcommand
-        //         .setName("pause")
-        //         .setDescription("Pause the playing audio"))
-        // .addSubcommand(subcommand =>
-        //     subcommand
-        //         .setName("resume")
-        //         .setDescription("Resume playing the paused audio"))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("pause")
+                .setDescription("Pause the playing audio"))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("resume")
+                .setDescription("Resume playing the paused audio"))
         .addSubcommand(subcommand =>
             subcommand
                 .setName("skip")
                 .setDescription("Skip to the next in queue"))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("repeat")
+                .setDescription("Repeat the current song")
+                .addBooleanOption(option => option.setName("onoroff").setDescription("True to repeat, False to stop repeating").setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName("stop")
@@ -73,36 +78,56 @@ module.exports = {
             return interaction.reply({ content: response });
         }
 
-        // if(interaction.options.getSubcommand() === "pause") {
-        //     if(!isConnected) return interaction.reply({ content: 'There are no songs playing right now.', ephemeral: true });
+        if(interaction.options.getSubcommand() === "pause") {
+            if(!isConnected) return interaction.reply({ content: 'There are no songs playing right now.', ephemeral: true });
 
-        //     const isPaused = music.isPaused({
-        //         interaction: interaction
-        //     });
+            const isPaused = music.isPaused({
+                interaction: interaction
+            });
 
-        //     if(isPaused) return interaction.reply({ content: "Music is already paused", ephemeral: true });
+            if(isPaused) return interaction.reply({ content: "Music is already paused", ephemeral: true });
 
-        //     music.pause({
-        //         interaction: interaction
-        //     });
+            music.pause({
+                interaction: interaction
+            });
 
-        //     return interaction.reply({ content: `Paused the music` });
-        // }
+            return interaction.reply({ content: `Paused the music` });
+        }
 
-        // if(interaction.options.getSubcommand() === "resume") {
-        //     if(!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });
+        if(interaction.options.getSubcommand() === "resume") {
+            if(!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });
 
-        //     const isResumed = music.isResumed({
-        //         interaction: interaction
-        //     });
-        //     if(isResumed) return interaction.reply({ content: 'The song is already resumed', ephemeral: true });
+            const isResumed = music.isResumed({
+                interaction: interaction
+            });
+            if(isResumed) return interaction.reply({ content: 'The song is already resumed', ephemeral: true });
 
-        //     music.resume({
-        //         interaction: interaction
-        //     });
+            music.resume({
+                interaction: interaction
+            });
 
-        //     interaction.reply({ content: `Resumed the music` });
-        // }
+            interaction.reply({ content: `Resumed the music` });
+        }
+
+        if (interaction.options.getSubcommand() === "repeat") {
+            if (!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });
+
+            const boolean = interaction.options.getBoolean('onoroff');
+
+
+            const isRepeated = music.isRepeated({
+                interaction: interaction
+            });
+            if(isRepeated === boolean) return interaction.reply({ content: `Repeat mode is already on ${boolean}`, ephemeral: true });
+
+
+            music.repeat({
+                interaction: interaction,
+                value: boolean
+            });
+
+            interaction.reply({ content: `Turned repeat mode to ${boolean}` });
+        }
 
         if (interaction.options.getSubcommand() === "skip") {
             if (!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });

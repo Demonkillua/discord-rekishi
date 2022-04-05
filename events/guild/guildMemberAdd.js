@@ -5,6 +5,10 @@ const serverSettingsModel = require('../../models/serverSettingsSchema')
 module.exports = {
 	name: 'guildMemberAdd',
 	async execute(member) {
+		let welcomeRole = member.guild.roles.cache.find(role => role.name === 'Member');
+
+    	member.roles.add(welcomeRole);
+
 		const randomMessage = Math.floor(Math.random() * 14);
 		const welcomeMessage = [
 			`${member.user} has joined the server!\nWe hope you enjoy your stay!`,

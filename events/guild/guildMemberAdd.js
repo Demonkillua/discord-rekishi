@@ -53,6 +53,7 @@ module.exports = {
 				serverID: member.guild.id,
 				userName: member.user.username,
 				serverName: member.guild.name,
+				contributor: false,
 				copper: 1000,
 				silver: 0,
 				gold: 0,

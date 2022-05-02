@@ -6,22 +6,26 @@ module.exports = {
         .setName("roll")
         .setDescription("Roll some dice")
         .addNumberOption(option => option.setName("amount").setDescription("How many dice to roll").setRequired(true))
-        .addNumberOption(option => option.setName("die").setDescription("Select a die type").addChoices([
-            ["d2", 2],
-            ["d4", 4],
-            ["d6", 6],
-            ["d8", 8],
-            ["d10", 10],
-            ["d12", 12],
-            ["d20", 20],
-            ["d100", 100],
-        ]).setRequired(true))
-        .addNumberOption(option => option.setName("modifier").setDescription("Input a modifier if needed")),
+        .addNumberOption(option => option.setName("die").setDescription("Select a die type").addChoices(
+            { name: "d2", value: 2 },
+            { name: "d4", value: 4 },
+            { name: "d6", value: 6 },
+            { name: "d8", value: 8 },
+            { name: "d10", value: 10 },
+            { name: "d12", value: 12 },
+            { name: "d20", value: 20 },
+            { name: "d100", value: 100 },
+        ).setRequired(true))
+        .addNumberOption(option => option.setName("modifier").setDescription("Enter a modifier to add"))
+        .addStringOption(option => option.setName("note").setDescription("Add a note to the results")),
     async execute(interaction, message, args) {
         if (args === "roll") return;
         var amount = interaction.options.getNumber("amount");
         var dice = interaction.options.getNumber("die");
-        var mod = interaction.options.getNumber("modifier")
+        var mod = interaction.options.getNumber("modifier");
+        var note = interaction.options.getString("note");
+        let breakdown = []
+        let sum = 0
 
         if (mod > 0) var sign = " + "
         else if (mod < 0) var sign = " - "
@@ -33,21 +37,48 @@ module.exports = {
         if (amount % 1 != 0 || amount < 1) return interaction.reply({ content: "Amount must be a whole number greater than or equal to 1", ephemeral: true });
         if (mod % 1 != 0) return interaction.reply({ content: "Modifier must be a whole number", ephemeral: true })
 
-        var randomNumber = Math.floor(Math.random() * (amount * dice)) + Math.floor(amount / 2) + 1;
-        var maxAmount = amount * dice;
-        if (randomNumber < amount) var randomNumber = amount;
-        if (randomNumber > maxAmount) var randomNumber = maxAmount;
-        const rollEmbed = new Discord.MessageEmbed()
-            .setColor("RANDOM")
+        for (i = 0; i < amount; i++) {
+            breakdown[i] = Math.floor(Math.random() * dice + 1)
+        }
+
+        for (i = 0; i < breakdown.length; i++) {
+            sum += breakdown[i]
+        }
+
+        let rollEmbed = new Discord.MessageEmbed()
             .setAuthor({
                 name: `${interaction.member.user.username}`,
                 iconURL: `${interaction.member.user.displayAvatarURL({ dynamic: true })}`
             })
             .setDescription(`You rolled ${amount} D${dice}${sign}${modText}!`)
-            .addFields(
-                { name: 'Results', value: `**${randomNumber + mod}**` }
-            )
             .setFooter({ text: `Roll with /roll` });
+
+        if (breakdown.includes(dice) && breakdown.includes(1)) {
+            rollEmbed.setColor("BLUE")
+        } else if (breakdown.includes(dice)) {
+            rollEmbed.setColor("GREEN")
+        } else if (breakdown.includes(1)) {
+            rollEmbed.setColor("RED")
+        } else rollEmbed.setColor("GREY");
+
+        if (breakdown[1]) {
+            rollEmbed.addFields(
+                { name: 'Total:', value: `${sum + mod}\n(${breakdown.join(" + ")}${sign}${modText})` },
+            )
+        } else if (!mod) {
+            rollEmbed.addFields(
+                { name: 'Roll:', value: `${sum}` },
+            )
+        } else {
+            rollEmbed.addFields(
+                { name: 'Total:', value: `${sum + mod}\n(${sum}${sign}${modText})` },
+            )
+        }
+
+
+        if (note) {
+            rollEmbed.addFields({ name: 'Note:', value: `${note}` })
+        }
         await interaction.reply({ embeds: [rollEmbed] });
     },
 };

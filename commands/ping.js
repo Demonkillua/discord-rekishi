@@ -1,20 +1,17 @@
-const { SlashCommandBuilder } = require('@discordjs/builders');
-const Discord = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 module.exports = {
-	name: "ping",
-	description: "Replies with Pong!",
 	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Replies with Pong!'),
 	async execute(interaction) {
-		const pongEmbed = new Discord.MessageEmbed()
+		const pongEmbed = new EmbedBuilder()
 			.setTitle('Pong!')
 			.setAuthor({
 				name: `${interaction.member.user.username}`,
 				iconURL: `${interaction.member.user.displayAvatarURL({ dynamic: true })}`
 		})
-			.setColor('RANDOM')
+			.setColor('Random')
 			.setDescription(`Latency is ${Date.now() - interaction.createdTimestamp}ms\nAPI Latency is ${Math.round(interaction.client.ws.ping)}ms`);
 
 		await interaction.reply({

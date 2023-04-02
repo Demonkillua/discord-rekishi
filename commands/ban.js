@@ -1,13 +1,12 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 
 module.exports = {
-    permissions: ["BAN_MEMBERS"],
     data: new SlashCommandBuilder()
         .setName("ban")
         .setDescription("Moderation: Ban a user from the server")
+        .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
         .addUserOption(option => option.setName("target").setDescription("The target user to ban")),
-    async execute(interaction, message, args) {
-        if (args === "ban") return;
+    async execute(interaction) {
         const target = interaction.options.getMember("target");
 
         if (target) {

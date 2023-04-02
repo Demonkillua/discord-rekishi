@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const serverSettingsModel = require("../../models/serverSettingsSchema")
 
 module.exports = {
@@ -15,7 +15,7 @@ module.exports = {
 			`Quick! We need healing!\n${member.user} is leaving us.`,
 			`Goodbye's can open up new opportunities, but it will still be sad to see you go, ${member.user}`
 		];
-		const memberLeftEmbed = new Discord.MessageEmbed()
+		const memberLeftEmbed = new EmbedBuilder()
 			.setColor("RED")
 			.setTitle("Goodbye!")
 			.setThumbnail(`${member.user.displayAvatarURL({ dynamic: true })}`)

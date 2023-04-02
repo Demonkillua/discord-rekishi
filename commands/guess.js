@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const Discord = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 const guildNumber = new Map();
 const guildAttempts = new Map();
@@ -27,14 +26,13 @@ module.exports = {
         .setName("guess")
         .setDescription("Try to guess the number!")
         .addNumberOption(option => option.setName("number").setDescription("Input your guess (between 1 and 20,000)").setRequired(true)),
-    async execute(interaction, message, args) {
-        if (args === "guess") return;
+    async execute(interaction) {
 
-        const provideaguess = new Discord.MessageEmbed()
+        const provideaguess = new EmbedBuilder()
             .setColor('#F30B04')
             .setDescription(`**❌ Please provide a guess!**`)
 
-        const pickinganumber = new Discord.MessageEmbed()
+        const pickinganumber = new EmbedBuilder()
             .setColor('#33F304')
             .setDescription('**Picking a number between 1 and 20000**')
 
@@ -51,7 +49,7 @@ module.exports = {
         if (+guess === guildNumber.get(interaction.guild.id)) {
             let attempts = guildAttempts.get(interaction.guild.id);
 
-            const guessedthenumber = new Discord.MessageEmbed()
+            const guessedthenumber = new EmbedBuilder()
                 .setColor('#33F304')
                 .setDescription(`✅ Perfect, ${interaction.member.user} the number was ${guildNumber.get(interaction.guild.id)}, it only took you ${attempts.attempts} attempts!`)
 

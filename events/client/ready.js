@@ -1,6 +1,7 @@
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9")
-const mongoose = require("mongoose");
+const { REST, Routes } = require('discord.js');
+const fs = require('node:fs');
+const path = require('node:path');
+const mongoose = require('mongoose');
 
 module.exports = {
 	name: "ready",
@@ -9,7 +10,10 @@ module.exports = {
 
 		console.log("Rekishi is online!")
 
-		client.user.setPresence({ activities: [{ name: `for /help`, type: 'WATCHING' }] })
+		const clientId = client.user.id;
+        const commandsPath = path.join(__dirname, '../../commands');
+        const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+		const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 
 		mongoose.connect(process.env.MONGODB_URI, {
 			keepAlive: true,
@@ -19,27 +23,26 @@ module.exports = {
 			console.log(err);
 		});
 
-		const clientId = client.user.id;
-
-		const rest = new REST({
-			version: "9",
-		}).setToken(process.env.TOKEN);
+		for (const file of commandFiles) {
+            const command = require(`../../commands/${file}`);
+            commands.push(command.data.toJSON());
+        }
 
 		(async () => {
 			try {
 				if (process.env.ENV === "production") {
-					await rest.put(Routes.applicationCommands(clientId), {
+					const data = await rest.put(Routes.applicationCommands(clientId), {
 						body: commands,
 					});
-					console.log("Successfully registered commands globally.");
+					console.log(`Successfully registered ${commands.length} commands globally.`);
 				} else {
-					await rest.put(Routes.applicationGuildCommands(clientId, process.env.GUILDID), {
+					const data = await rest.put(Routes.applicationGuildCommands(clientId, process.env.GUILDID), {
 						body: commands,
 					});
-					console.log("Successfully registered commands within test server.");
+					console.log(`Successfully registered ${commands.length} commands within test server.`);
 				}
-			} catch (err) {
-				if (err) console.log(err);
+			} catch (error) {
+				if (error) console.error(error);
 			}
 		})();
 	}

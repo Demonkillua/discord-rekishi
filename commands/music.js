@@ -1,10 +1,10 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const music = require("@koenie06/discord.js-music");
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require("discord.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName("music")
         .setDescription("Control youtube music in the users current voice channel")
+        .setDefaultMemberPermissions(PermissionFlagsBits.Speak)
         .addSubcommand(subcommand =>
             subcommand
                 .setName("play")
@@ -12,159 +12,90 @@ module.exports = {
                 .addStringOption(option => option.setName("search").setDescription("Search a song").setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand
-                .setName("queue")
-                .setDescription("Check the music queue"))
-        // .addSubcommand(subcommand =>
-        //     subcommand
-        //         .setName("pause")
-        //         .setDescription("Pause the playing audio"))
-        // .addSubcommand(subcommand =>
-        //     subcommand
-        //         .setName("resume")
-        //         .setDescription("Resume playing the paused audio"))
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("skip")
-                .setDescription("Skip to the next in queue"))
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName("repeat")
-                .setDescription("Repeat the current song")
-                .addBooleanOption(option => option.setName("onoroff").setDescription("True to repeat, False to stop repeating").setRequired(true)))
-        .addSubcommand(subcommand =>
-            subcommand
                 .setName("stop")
-                .setDescription("Stop playing music"))
+                .setDescription("Stop playing and exit the current voice channel"))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName("settings")
+                .setDescription("Select settings")
+                .addStringOption(option => option.setName("option").setDescription("Select settings option").addChoices(
+                    { name: "pause", value: "pause" },
+                    { name: "queue", value: "queue" },
+                    { name: "resume", value: "resume" },
+                    { name: "skip", value: "skip" },
+                ).setRequired(true)))
         .addSubcommand(subcommand =>
             subcommand
                 .setName("volume")
-                .setDescription("Change the colume of the music")
-                .addIntegerOption(option => option.setName("volume").setDescription("The new volume for the music").setRequired(true))),
-    async execute(interaction, message, args) {
-        if (args === "music") return;
+                .setDescription("Change the volume of the music")
+                .addIntegerOption(option => option.setName("percentage").setDescription("The new volume for the music. ex. 10 = 10%").setRequired(true))),
+    async execute(interaction, client) {
+        const { options, member, channel } = interaction;
+        const queue = await client.distube.getQueue(VoiceChannel);
+        const VoiceChannel = member.voice.channel;
 
-        const isConnected = await music.isConnected({
-            interaction: interaction
-        });
-        const voiceChannel = interaction.member.voice.channel;
+        if (!VoiceChannel) return interaction.reply({ content: 'You need to be in a voice channel to use the music command!', ephemeral: true });
+        
+        try {
 
-        if (interaction.options.getSubcommand() === "play") {
-            const song = interaction.options.getString('search');
+            if (interaction.options.getSubcommand() === "play") {
+                client.distube.play(VoiceChannel, options.getString("search"), { textChannel: channel, member: member });
+                return interaction.reply({ content: "🎶 Processing Request 🎶", ephemeral: true });
+            }
 
-            if (!voiceChannel) return interaction.reply({ content: 'You need to be in a voice channel!', ephemeral: true });
+            if (interaction.options.getSubcommand() === "stop") {
+                await queue.stop(VoiceChannel);
+                return interaction.reply({ content: "Music has been stopped." });
+            }
+    
+            if (interaction.options.getSubcommand() === "settings") {
+                const Options = options.getString("option");
+                
+                if (!queue) return interaction.reply({ content: "⛔ There is not a current queue available.", ephemeral: true });
 
-            music.play({
-                interaction: interaction,
-                channel: voiceChannel,
-                song: song
-            });
+                if (Options === "pause") {
+                    await queue.pause(VoiceChannel);
+                    return interaction.reply({ content: "Song has been paused." });
+                }
 
-            return interaction.reply({ content: "Song added to queue.", ephemeral: true });
-        }
+                if (Options === "queue") {
+                    let queueEmbed = new EmbedBuilder();
+                    queueEmbed
+                        .setColor("Blurple")
+                        .setDescription(`${queue.songs.map(
+                            (song, id) => `\n**${id + 1}**. ${song.name} - \`${song.formattedDuration}\``
+                        )}`)
 
-        if (interaction.options.getSubcommand() === "queue") {
-            if (!isConnected) return interaction.reply({ content: 'There is currently nothing in the queue!', ephemeral: true });
+                    return interaction.reply({ embeds: [queueEmbed] });
+                }
 
-            const queue = await music.getQueue({
-                interaction: interaction
-            });
+                if (Options === "resume") {
+                    await queue.resume(VoiceChannel);
+                    return interaction.reply({ content: "Song has been resumed." });
+                }
 
-            let response = ``;
+                if (Options === "skip") {
+                    await queue.skip(VoiceChannel);
+                    return interaction.reply({ content: "Song has been skipped." });
+                }
+            }
+    
+            if (interaction.options.getSubcommand() === "volume") {
+                const Volume = options.getInteger("percentage");
 
-            for (let i = 0; i < queue.length; i++) {
-                response += `${i + 1}. [${queue[i].info.title}](${queue[i].info.url}) - ${queue[i].info.duration}\n`
-            };
+                if (Volume > 100 || Volume < 1 || Volume % 1 != 0) return interaction.reply({ content: "You must input a whole number between 1 and 100.", ephemeral: true });
 
-            return interaction.reply({ content: response });
-        }
-
-        // if(interaction.options.getSubcommand() === "pause") {
-        //     if(!isConnected) return interaction.reply({ content: 'There are no songs playing right now.', ephemeral: true });
-
-        //     const isPaused = music.isPaused({
-        //         interaction: interaction
-        //     });
-
-        //     if(isPaused) return interaction.reply({ content: "Music is already paused", ephemeral: true });
-
-        //     music.pause({
-        //         interaction: interaction
-        //     });
-
-        //     return interaction.reply({ content: `Paused the music` });
-        // }
-
-        // if(interaction.options.getSubcommand() === "resume") {
-        //     if(!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });
-
-        //     const isResumed = music.isResumed({
-        //         interaction: interaction
-        //     });
-        //     if(isResumed) return interaction.reply({ content: 'The song is already resumed', ephemeral: true });
-
-        //     music.resume({
-        //         interaction: interaction
-        //     });
-
-        //     interaction.reply({ content: `Resumed the music` });
-        // }
-
-        if (interaction.options.getSubcommand() === "repeat") {
-            if (!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });
-
-            const boolean = interaction.options.getBoolean('onoroff');
-
-
-            const isRepeated = music.isRepeated({
-                interaction: interaction
-            });
-            if(isRepeated === boolean) return interaction.reply({ content: `Repeat mode is already on ${boolean}`, ephemeral: true });
-
-
-            music.repeat({
-                interaction: interaction,
-                value: boolean
-            });
-
-            interaction.reply({ content: `Turned repeat mode to ${boolean}` });
-        }
-
-        if (interaction.options.getSubcommand() === "skip") {
-            if (!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });
-
-            music.skip({
-                interaction: interaction
-            });
-
-            return interaction.reply({ content: `Skipped the song` });
-        }
-
-        if (interaction.options.getSubcommand() === "stop") {
-            if (!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });
-
-            music.stop({
-                interaction: interaction
-            });
-
-            return interaction.reply({ content: "Stopped playing all music." });
-        }
-
-        if (interaction.options.getSubcommand() === "volume") {
-            const volume = interaction.options.getInteger('volume');
-
-            if (volume > 100) return interaction.reply({ content: 'Can\'t go higher than 100%', ephemeral: true });
-
-            const isConnected = await music.isConnected({
-                interaction: interaction
-            });
-            if (!isConnected) return interaction.reply({ content: 'There are no songs playing', ephemeral: true });
-
-            music.volume({
-                interaction: interaction,
-                volume: volume
-            });
-
-            interaction.reply({ content: `Set the volume to ${volume}` });
+                client.distube.setVolume(VoiceChannel, Volume);
+                return interaction.reply({ content: `Volume has been set to ${Volume}% by \`${interaction.member.user.username}\`` });
+            }
+            return;
+            
+        } catch(error) {
+            let errorEmbed = new EmbedBuilder();
+            errorEmbed
+                .setColor("Red")
+                .setDescription(`⛔ Error: ${error}`)
+            return interaction.reply({ embeds: [errorEmbed] });
         }
     }
 }

@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const profileModel = require('../../models/profileSchema')
 const serverSettingsModel = require('../../models/serverSettingsSchema')
 
@@ -28,7 +28,7 @@ module.exports = {
 			`${member.user} tried to sneak into the server.\nTo bad my perception is much higher.\nWelcome to the server!`,
 		];
 
-		const newMemberEmbed = new Discord.MessageEmbed()
+		const newMemberEmbed = new EmbedBuilder()
 			.setColor("GREEN")
 			.setTitle("New Member!")
 			.setThumbnail(`${member.user.displayAvatarURL({ dynamic: true })}`)

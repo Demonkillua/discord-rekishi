@@ -1,5 +1,4 @@
-const Discord = require("discord.js");
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const profileModel = require("../models/profileSchema")
 
 module.exports = {
@@ -9,10 +8,10 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("balance")
         .setDescription("Replies with current currency balance"),
-    async execute(interaction, message, client) {
+    async execute(interaction) {
         let profileData = await profileModel.findOne({ userID: interaction.member.user.id, serverID: interaction.member.guild.id });
 
-        const newEmbed = new Discord.MessageEmbed()
+        const newEmbed = new EmbedBuilder()
             .setColor('#32a852')
             .setThumbnail(`${interaction.member.user.displayAvatarURL({ dynamic: true })}`)
             .setTitle(`${interaction.member.user.username}`)

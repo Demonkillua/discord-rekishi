@@ -1,16 +1,14 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { SlashCommandBuilder, PermissionFlagsBits } = require("discord.js");
 const serverSettingsModel = require("../models/serverSettingsSchema")
 
 module.exports = {
-    name: "setgoodbye",
-    permissions: ["MANAGE_GUILD"],
     data: new SlashCommandBuilder()
         .setName("setgoodbye")
         .setDescription("Administation: Set up the channel for all goodbye messages")
+        .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
         .addChannelOption(option => option.setName("goodbyechannel").setDescription("The channel to set for all goodbye messages"))
         .addBooleanOption(option => option.setName("delete").setDescription("Pass as true to remove your goodbye channel")),
-    async execute(interaction, message, args) {
-        if (args === "setgoodbye") return;
+    async execute(interaction) {
         if (!interaction.options.getBoolean("delete") && !interaction.options.getChannel("goodbyechannel")) {
             return interaction.reply({ content: "You need to select at least one option to set or delete a goodbye channel.", ephemeral: true });
         } else if (interaction.options.getBoolean("delete") === true) {

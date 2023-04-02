@@ -1,3 +1,3 @@
 Meet Rekishi, a discord bot created by Demonkillua.
 
-More to be added at a later date.
+Recently updated from V13 to V14.

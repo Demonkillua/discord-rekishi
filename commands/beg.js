@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { SlashCommandBuilder } = require("discord.js");
 const profileModel = require("../models/profileSchema");
 
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("beg")
         .setDescription("beg for currency."),
-    async execute(interaction, message, args) {
+    async execute(interaction) {
         var typeId = interaction.member.user.id;
         var guildId = interaction.member.guild.id;
         var replyUser = interaction.member.displayName;
@@ -20,8 +20,6 @@ module.exports = {
 
         let profileData = await profileModel.findOne({ userID: typeId, serverID: guildId });
         if (!profileData) return await interaction.reply({ content: "Profile Data missing... Data created, please enter the command again. Cooldown may be in effect.", ephemeral: true });
-
-        if (args === "beg" && profileData.contributor !== true) return interaction.channel.send("Become a contributor to use this command with a prefix!");
         
         const response = await profileModel.findOneAndUpdate(
             {

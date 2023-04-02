@@ -1,24 +1,19 @@
-const Discord = require("discord.js");
-const { SlashCommandBuilder } = require("@discordjs/builders");
+const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 
 module.exports = {
-	name: "clear",
-	description: "Bulk delete messages",
-	botPerms: ["MANAGE_MESSAGES"],
-	permissions: ["MANAGE_MESSAGES"],
 	data: new SlashCommandBuilder()
 		.setName("clear")
 		.setDescription("Moderation: Bulk delete recent messages.")
+		.setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
 		.addNumberOption(option => option.setName("amount").setDescription("Amount of messages to delete").setRequired(true))
 		.addUserOption(option => option.setName("target").setDescription("User to target")),
-	async execute(interaction, message, args, client) {
-		if (args === "clear") return;
+	async execute(interaction) {
 		const amount = interaction.options.getNumber("amount");
 		const target = interaction.options.getMember("target");
 
 		const Messages = await interaction.channel.messages.fetch();
 
-		const response = new Discord.MessageEmbed()
+		const response = new EmbedBuilder()
 			.setColor("#ff5100")
 
 		if (amount > 100 || amount <= 0) {

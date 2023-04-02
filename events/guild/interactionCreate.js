@@ -48,34 +48,11 @@ module.exports = {
 			console.log(err);
 		}
 
-		if (!interaction.isCommand()) return;
+		if (!interaction.isChatInputCommand()) return;
 
 		const command = interaction.client.commands.get(interaction.commandName);
 
 		if (!command) return;
-
-		const errorEmbed = new Discord.MessageEmbed().setColor("RED");
-
-		if (!interaction.guild.me.permissions.has(["SEND_MESSAGES", "EMBED_LINKS"])) {
-			errorEmbed.setDescription(`I don't have the \`SEND_MESSAGES\` or \`EMBED_LINKS\` permissions to execute ${command.name} of the ${interaction.channel.toString()} channel.`)
-			return await interaction.member.send({ embeds: [errorEmbed], ephemeral: true })
-		}
-		if (!interaction.member.permissions.has(command.permissions || [])) {
-			errorEmbed.setDescription(`You need the following permissions \`\`\`${command.permissions.join(", ")}\`\`\``)
-			return await interaction.reply({ embeds: [errorEmbed], ephemeral: true })
-		}
-		if (!interaction.guild.me.permissions.has(command.botPerms || [])) {
-			errorEmbed.setDescription(`The bot does not have there permissions \`\`\`${command.permissions.join(", ")}\`\`\``)
-			return await interaction.reply({ embeds: [errorEmbed], ephemeral: true })
-		}
-		const channelPerms = interaction.channel.permissionsFor(interaction.guild.me).toArray();
-		const checkArr = [];
-		const chPerms = command.chnlPerms || [];
-		channelPerms.forEach((x) => (chPerms.includes(x) ? checkArr.push(true) : checkArr.push(false)))
-		if (checkArr.includes(false) && !checkArr.includes(true) && chPerms.length) {
-			errorEmbed.setDescription(`The bot doesn't have these permissions on the ${interaction.channel.toString()} channel \`\`\`${chPerms.join(", ")}\`\`\``)
-			return await interaction.reply({ embeds: [errorEmbed], ephemeral: true })
-		}
 
 		if (!cooldowns.has(command.name)) {
 			cooldowns.set(command.name, new Discord.Collection());
@@ -109,13 +86,14 @@ module.exports = {
 		setTimeout(() => time_stamps.delete(interaction.user.id + interaction.guild.id), cooldown_amount);
 
 		try {
-			await command.execute(interaction, client, Discord, profileData);
-		} catch (err) {
-			if (err) console.error(err);
-			await interaction.reply({
-				content: 'There was an error while executing this command!',
-				ephemeral: true,
-			});
+			await command.execute(interaction, client, profileData);
+		} catch (error) {
+			console.error(error);
+			if (interaction.replied || interaction.deferred) {
+                await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+            } else {
+                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            }
 		}
 	}
 };

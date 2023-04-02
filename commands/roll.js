@@ -1,5 +1,4 @@
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const Discord = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,14 +17,15 @@ module.exports = {
         ).setRequired(true))
         .addNumberOption(option => option.setName("modifier").setDescription("Enter a modifier to add"))
         .addStringOption(option => option.setName("note").setDescription("Add a note to the results")),
-    async execute(interaction, message, args) {
-        if (args === "roll") return;
+    async execute(interaction) {
         var amount = interaction.options.getNumber("amount");
         var dice = interaction.options.getNumber("die");
         var mod = interaction.options.getNumber("modifier");
         var note = interaction.options.getString("note");
         let breakdown = []
         let sum = 0
+
+        if (amount > 100) return interaction.reply({ content: "Please enter 100 or less of the amount of dice.", ephemeral: true })
 
         if (mod > 0) var sign = " + "
         else if (mod < 0) var sign = " - "
@@ -45,7 +45,7 @@ module.exports = {
             sum += breakdown[i]
         }
 
-        let rollEmbed = new Discord.MessageEmbed()
+        let rollEmbed = new EmbedBuilder()
             .setAuthor({
                 name: `${interaction.member.user.username}`,
                 iconURL: `${interaction.member.user.displayAvatarURL({ dynamic: true })}`
@@ -54,12 +54,12 @@ module.exports = {
             .setFooter({ text: `Roll with /roll` });
 
         if (breakdown.includes(dice) && breakdown.includes(1)) {
-            rollEmbed.setColor("BLUE")
+            rollEmbed.setColor("Blue")
         } else if (breakdown.includes(dice)) {
-            rollEmbed.setColor("GREEN")
+            rollEmbed.setColor("Green")
         } else if (breakdown.includes(1)) {
-            rollEmbed.setColor("RED")
-        } else rollEmbed.setColor("GREY");
+            rollEmbed.setColor("Red")
+        } else rollEmbed.setColor("Grey");
 
         if (breakdown[1]) {
             rollEmbed.addFields(

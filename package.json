@@ -1,33 +1,24 @@
 {
-  "name": "rekiski",
-  "version": "0.1.15",
-  "description": "Main rekishi discord bot",
-  "main": "main.js",
+  "name": "rekishi_testing",
+  "version": "1.14.01",
+  "description": "testing files for Rekishi Bot",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon main.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Demonkillua/discord-rekishi.git"
+    "dev": "nodemon index.js"
   },
   "author": "Edward Greczkowski",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Demonkillua/discord-rekishi/issues"
-  },
-  "homepage": "https://github.com/Demonkillua/discord-rekishi#readme",
   "dependencies": {
-    "@discordjs/builders": "^0.13.0",
-    "@discordjs/opus": "^0.7.0",
-    "@discordjs/rest": "^0.1.0-canary.0",
-    "@discordjs/voice": "^0.9.0",
-    "@koenie06/discord.js-music": "^1.3.0",
-    "discord-api-types": "^0.32.0",
-    "discord.js": "^13.6.0",
-    "dotenv": "^10.0.0",
-    "mongoose": "^6.3.1",
-    "nodemon": "^2.0.16",
-    "yt-search": "^2.10.3"
+    "@discordjs/opus": "^0.9.0",
+    "@discordjs/voice": "^0.16.0",
+    "@distube/spotify": "^1.5.1",
+    "discord.js": "^14.9.0",
+    "distube": "^4.0.4",
+    "dotenv": "^16.0.3",
+    "ffmpeg-static": "^4.4.1",
+    "libsodium-wrappers": "^0.7.11",
+    "mongoose": "^7.0.3",
+    "nodemon": "^2.0.22"
   }
 }

@@ -1,4 +1,4 @@
-const Discord = require("discord.js");
+const { Discord, Collection } = require("discord.js");
 const profileModel = require("../../models/profileSchema");
 const cooldowns = new Map;
 
@@ -48,6 +48,18 @@ module.exports = {
 			console.log(err);
 		}
 
+		if (interaction.isStringSelectMenu()) {
+			const selected = interaction.values[0];
+			if (interaction.customId === "pathfinderSong" || "pathfinderSong1" || "pathfinderSong2" || "pathfinderSong3") {
+				const VoiceChannel = interaction.member.voice.channel;
+        		if (!VoiceChannel) return interaction.reply({ content: 'You need to be in a voice channel to use the music command!', ephemeral: true });
+
+				client.distube.play(VoiceChannel, selected, { textChannel: interaction.channel, member: interaction.member });
+                await interaction.update({ content: "🎶 Processing Request 🎶", ephemeral: true });
+			}
+			else return interaction.reply({ content: "Something went wrong with this selection menu", ephemeral:true });
+		}
+		
 		if (!interaction.isChatInputCommand()) return;
 
 		const command = interaction.client.commands.get(interaction.commandName);
@@ -55,7 +67,7 @@ module.exports = {
 		if (!command) return;
 
 		if (!cooldowns.has(command.name)) {
-			cooldowns.set(command.name, new Discord.Collection());
+			cooldowns.set(command.name, new Collection());
 		}
 
 		const current_time = Date.now();
